@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: centos
+        image: centos
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo hello $(date); sleep 10;done"]
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+        volumeMounts:
+            - name: config-volume
+              mountPath: /usr/share/nginx/html
+      volumes:
+          - name: config-volume
+            configMap:
+              # Provide the name of the ConfigMap containing the files you want
+              # to add to the container
+              name: nginx-index
+    
